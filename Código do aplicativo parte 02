@@ -1,0 +1,95 @@
+https://www.eclipse.org/paho/clients/android/
+https://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service
+
+******buil.gradle*******
+
+repositories {
+    maven {
+        url "https://repo.eclipse.org/content/repositories/paho-releases/"
+    }
+}
+
+//dentro do dependencies
+
+compile('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
+        exclude module: 'support-v4'}
+
+*****AndroidManifest******
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+//depois do </activity>
+<service android:name="org.eclipse.paho.android.service.MqttService" >
+
+******MainAcitivity*******
+
+ static String MQTTHOST = "tcp://xxxxxxxxxxxx:porta";
+    static String USERNAME = "xxxxxxx";
+    static String PASSWORD = "xxxxxxx";
+    String topicStr = "LED";
+    MqttAndroidClient client;
+---------------------------------------------------------------------------------------Oncreate
+        String clientId = MqttClient.generateClientId();
+        client = new MqttAndroidClient(this.getApplicationContext(), MQTTHOST, clientId);
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setUserName(USERNAME);
+        options.setPassword(PASSWORD.toCharArray());
+
+        try {
+            IMqttToken token = client.connect(options);
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Toast.makeText(MainActivity.this,"conectado",Toast.LENGTH_LONG).show();
+                                                       }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Toast.makeText(MainActivity.this,"não conectado",Toast.LENGTH_LONG).show();
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+-------------------------------------------------------------------  fora do oncreate
+
+    public void ligar1(View v){
+        String topic = topicStr;
+        String message = "L1";
+        try {
+            client.publish(topic, message.getBytes(),0,false    );
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+public void desligar1(View v){
+        String topic = topicStr;
+        String message = "D1";
+        try {
+            client.publish(topic, message.getBytes(),0,false    );
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+    public void ligar2(View v){
+        String topic = topicStr;
+        String message = "L2";
+        try {
+            client.publish(topic, message.getBytes(),0,false    );
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+    public void desligar2(View v){
+        String topic = topicStr;
+        String message = "D2";
+        try {
+            client.publish(topic, message.getBytes(),0,false    );
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
